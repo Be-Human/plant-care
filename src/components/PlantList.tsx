@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Plant } from '../types/plant';
+import type { CareAction } from '../App';
 import PlantCard from './PlantCard';
 
 interface PlantListProps {
@@ -8,9 +9,17 @@ interface PlantListProps {
   onDelete: (id: string) => void;
   onWater: (id: string) => void;
   onFertilize: (id: string) => void;
+  lastCareAction: CareAction | null;
 }
 
-const PlantList: React.FC<PlantListProps> = ({ plants, onEdit, onDelete, onWater, onFertilize }) => {
+const PlantList: React.FC<PlantListProps> = ({ 
+  plants, 
+  onEdit, 
+  onDelete, 
+  onWater, 
+  onFertilize,
+  lastCareAction 
+}) => {
   if (plants.length === 0) {
     return (
       <div className="empty-state">
@@ -31,6 +40,7 @@ const PlantList: React.FC<PlantListProps> = ({ plants, onEdit, onDelete, onWater
           onDelete={onDelete}
           onWater={onWater}
           onFertilize={onFertilize}
+          lastCareAction={lastCareAction}
         />
       ))}
     </div>

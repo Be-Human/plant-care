@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Plant } from '../types/plant';
+import type { CareAction } from '../App';
 import { getWateringStatus, getFertilizingStatus, formatDaysRemaining } from '../utils/careUtils';
 
 interface PlantCardProps {
@@ -8,9 +9,19 @@ interface PlantCardProps {
   onDelete: (id: string) => void;
   onWater: (id: string) => void;
   onFertilize: (id: string) => void;
+  lastCareAction: CareAction | null;
 }
 
-const PlantCard: React.FC<PlantCardProps> = ({ plant, onEdit, onDelete, onWater, onFertilize }) => {
+const PlantCard: React.FC<PlantCardProps> = ({ 
+  plant, 
+  onEdit, 
+  onDelete, 
+  onWater, 
+  onFertilize,
+  lastCareAction 
+}) => {
+  const isWateringSuccess = lastCareAction?.plantId === plant.id && lastCareAction?.action === 'water';
+  const isFertilizingSuccess = lastCareAction?.plantId === plant.id && lastCareAction?.action === 'fertilize';
   const wateringStatus = getWateringStatus(plant);
   const fertilizingStatus = getFertilizingStatus(plant);
 
@@ -69,16 +80,18 @@ const PlantCard: React.FC<PlantCardProps> = ({ plant, onEdit, onDelete, onWater,
 
         <div className="plant-care-actions">
           <button 
-            className="btn-care btn-water" 
+            className={`btn-care btn-water ${isWateringSuccess ? 'btn-success' : ''}`}
             onClick={() => onWater(plant.id)}
+            disabled={isWateringSuccess}
           >
-            💧 浇水
+            {isWateringSuccess ? '✓ 已浇水' : '💧 浇水'}
           </button>
           <button 
-            className="btn-care btn-fertilize" 
+            className={`btn-care btn-fertilize ${isFertilizingSuccess ? 'btn-success' : ''}`}
             onClick={() => onFertilize(plant.id)}
+            disabled={isFertilizingSuccess}
           >
-            🧪 施肥
+            {isFertilizingSuccess ? '✓ 已施肥' : '🧪 施肥'}
           </button>
         </div>
 
