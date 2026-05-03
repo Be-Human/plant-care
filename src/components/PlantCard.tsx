@@ -17,11 +17,18 @@ const PlantCard: React.FC<PlantCardProps> = ({ plant, onEdit, onDelete }) => {
   return (
     <div className="plant-card">
       <div className="plant-image">
-        <img 
-          src={plant.coverImage || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=A%20beautiful%20green%20plant%20in%20a%20white%20ceramic%20pot%20on%20a%20wooden%20table%2C%20natural%20lighting%2C%20minimalist%20style&image_size=square'} 
-          alt={plant.name} 
-          loading="lazy"
-        />
+        {plant.coverImage ? (
+          <img 
+            src={plant.coverImage} 
+            alt={plant.name} 
+            loading="lazy"
+          />
+        ) : (
+          <div className="plant-image-placeholder">
+            <span className="placeholder-icon">🌿</span>
+            <span className="placeholder-text">暂无图片</span>
+          </div>
+        )}
       </div>
       <div className="plant-info">
         <h3 className="plant-name">{plant.name}</h3>

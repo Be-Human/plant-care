@@ -96,7 +96,7 @@ function App() {
               植物养护
             </h1>
             <button className="add-button" onClick={handleAddPlant}>
-              <span>➕</span>
+              <span className="button-icon">➕</span>
               添加植物
             </button>
           </div>
