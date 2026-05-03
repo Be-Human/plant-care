@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import type { Plant } from '../types/plant';
+import type { PlantFormData } from '../utils/storage';
 
 interface PlantFormProps {
   plant?: Plant;
-  onSave: (plant: Omit<Plant, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSave: (plant: PlantFormData) => void;
   onCancel: () => void;
 }
 

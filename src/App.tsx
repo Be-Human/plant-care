@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Plant } from './types/plant';
+import type { PlantFormData } from './utils/storage';
 import { getPlants, addPlant, updatePlant, deletePlant, recordWatering, recordFertilizing } from './utils/storage';
 import PlantList from './components/PlantList';
 import PlantForm from './components/PlantForm';
@@ -88,7 +89,7 @@ function App() {
   };
 
   const handleSavePlant = (
-    plantData: Omit<Plant, 'id' | 'createdAt' | 'updatedAt'>
+    plantData: PlantFormData
   ) => {
     try {
       if (editingPlant) {

@@ -2,9 +2,35 @@ import type { Plant } from '../types/plant';
 
 const STORAGE_KEY = 'plant-care-plants';
 
+const migratePlant = (plant: Partial<Plant>): Plant => {
+  const now = new Date().toISOString();
+  return {
+    id: plant.id || '',
+    name: plant.name || '',
+    variety: plant.variety || '',
+    location: plant.location || '',
+    notes: plant.notes || '',
+    coverImage: plant.coverImage || '',
+    createdAt: plant.createdAt || now,
+    updatedAt: plant.updatedAt || now,
+    wateringIntervalDays: plant.wateringIntervalDays || 7,
+    lastWateredAt: plant.lastWateredAt || plant.createdAt || now,
+    fertilizingIntervalDays: plant.fertilizingIntervalDays || 30,
+    lastFertilizedAt: plant.lastFertilizedAt || plant.createdAt || now,
+  };
+};
+
 export const getPlants = (): Plant[] => {
   const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
+  if (!stored) return [];
+  
+  try {
+    const plants = JSON.parse(stored) as Partial<Plant>[];
+    return plants.map(migratePlant);
+  } catch (error) {
+    console.error('Failed to parse plants from storage:', error);
+    return [];
+  }
 };
 
 export const savePlants = (plants: Plant[]): void => {
@@ -16,19 +42,33 @@ export const getPlantById = (id: string): Plant | undefined => {
   return plants.find(plant => plant.id === id);
 };
 
-export const addPlant = (plant: Omit<Plant, 'id' | 'createdAt' | 'updatedAt'>): Plant => {
+export interface PlantFormData {
+  name: string;
+  variety: string;
+  location: string;
+  notes: string;
+  coverImage: string;
+  wateringIntervalDays: number;
+  fertilizingIntervalDays: number;
+}
+
+export const addPlant = (plant: PlantFormData): Plant => {
   const plants = getPlants();
   const now = new Date().toISOString();
   
   const newPlant: Plant = {
-    ...plant,
     id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 11),
+    name: plant.name,
+    variety: plant.variety,
+    location: plant.location,
+    notes: plant.notes,
+    coverImage: plant.coverImage,
     createdAt: now,
     updatedAt: now,
     wateringIntervalDays: plant.wateringIntervalDays || 7,
-    lastWateredAt: plant.lastWateredAt || now,
+    lastWateredAt: now,
     fertilizingIntervalDays: plant.fertilizingIntervalDays || 30,
-    lastFertilizedAt: plant.lastFertilizedAt || now,
+    lastFertilizedAt: now,
   };
   
   plants.push(newPlant);
