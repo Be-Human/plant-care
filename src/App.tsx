@@ -1,9 +1,20 @@
 import { useState, useEffect } from 'react';
-import type { Plant } from './types/plant';
+import type { Plant, CareLog } from './types/plant';
 import type { PlantFormData } from './utils/storage';
-import { getPlants, addPlant, updatePlant, deletePlant, recordWatering, recordFertilizing } from './utils/storage';
+import { 
+  getPlants, 
+  addPlant, 
+  updatePlant, 
+  deletePlant, 
+  recordWatering, 
+  recordFertilizing,
+  getCareLogs 
+} from './utils/storage';
 import PlantList from './components/PlantList';
 import PlantForm from './components/PlantForm';
+import DashboardOverview from './components/DashboardOverview';
+import PlantCareLog from './components/PlantCareLog';
+import CareCharts from './components/CareCharts';
 import './App.css';
 
 export interface CareAction {
@@ -14,8 +25,10 @@ export interface CareAction {
 
 function App() {
   const [plants, setPlants] = useState<Plant[]>([]);
+  const [careLogs, setCareLogs] = useState<CareLog[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlant, setEditingPlant] = useState<Plant | undefined>(undefined);
+  const [selectedPlantForLog, setSelectedPlantForLog] = useState<Plant | undefined>(undefined);
   const [isInitialized, setIsInitialized] = useState(false);
   const [lastCareAction, setLastCareAction] = useState<CareAction | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -28,16 +41,30 @@ function App() {
       } catch (error) {
         console.error('Failed to load plants from storage:', error);
         setPlants([]);
+      }
+    };
+
+    const loadCareLogs = () => {
+      try {
+        const logs = getCareLogs();
+        setCareLogs(logs);
+      } catch (error) {
+        console.error('Failed to load care logs from storage:', error);
+        setCareLogs([]);
       } finally {
         setIsInitialized(true);
       }
     };
 
     loadPlants();
+    loadCareLogs();
 
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'plant-care-plants') {
         loadPlants();
+      }
+      if (e.key === 'plant-care-care-logs') {
+        loadCareLogs();
       }
     };
 
@@ -82,6 +109,7 @@ function App() {
             plant.id === id ? updatedPlant : plant
           )
         );
+        setCareLogs(getCareLogs());
         setLastCareAction({ plantId: id, action: 'water', timestamp: Date.now() });
         setTimeout(() => {
           setLastCareAction(prev => 
@@ -104,6 +132,7 @@ function App() {
             plant.id === id ? updatedPlant : plant
           )
         );
+        setCareLogs(getCareLogs());
         setLastCareAction({ plantId: id, action: 'fertilize', timestamp: Date.now() });
         setTimeout(() => {
           setLastCareAction(prev => 
@@ -115,6 +144,14 @@ function App() {
     } catch (error) {
       console.error('Failed to record fertilizing:', error);
     }
+  };
+
+  const handleViewLogs = (plant: Plant) => {
+    setSelectedPlantForLog(plant);
+  };
+
+  const handleCloseLogs = () => {
+    setSelectedPlantForLog(undefined);
   };
 
   const handleSavePlant = (
@@ -167,6 +204,17 @@ function App() {
         <div className="container">
           {isInitialized && (
             <>
+              <DashboardOverview
+                plants={plants}
+                onWater={handleWaterPlant}
+                onFertilize={handleFertilizePlant}
+              />
+              
+              <CareCharts
+                plants={plants}
+                logs={careLogs}
+              />
+
               <div className="section-header">
                 <h2 className="section-title">我的植物</h2>
                 <span className="plant-count">
@@ -179,6 +227,7 @@ function App() {
                 onDelete={handleDeletePlant}
                 onWater={handleWaterPlant}
                 onFertilize={handleFertilizePlant}
+                onViewLogs={handleViewLogs}
                 lastCareAction={lastCareAction}
               />
             </>
@@ -199,6 +248,13 @@ function App() {
           plant={editingPlant}
           onSave={handleSavePlant}
           onCancel={handleCancel}
+        />
+      )}
+
+      {selectedPlantForLog && (
+        <PlantCareLog
+          plant={selectedPlantForLog}
+          onClose={handleCloseLogs}
         />
       )}
 

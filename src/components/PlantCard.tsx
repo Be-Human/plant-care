@@ -9,6 +9,7 @@ interface PlantCardProps {
   onDelete: (id: string) => void;
   onWater: (id: string) => void;
   onFertilize: (id: string) => void;
+  onViewLogs: (plant: Plant) => void;
   lastCareAction: CareAction | null;
 }
 
@@ -18,6 +19,7 @@ const PlantCard: React.FC<PlantCardProps> = ({
   onDelete, 
   onWater, 
   onFertilize,
+  onViewLogs,
   lastCareAction 
 }) => {
   const isWateringSuccess = lastCareAction?.plantId === plant.id && lastCareAction?.action === 'water';
@@ -96,6 +98,12 @@ const PlantCard: React.FC<PlantCardProps> = ({
         </div>
 
         <div className="plant-actions">
+          <button 
+            className="btn-view-logs" 
+            onClick={() => onViewLogs(plant)}
+          >
+            📋 日志
+          </button>
           <button 
             className="btn-edit" 
             onClick={() => onEdit(plant)}
