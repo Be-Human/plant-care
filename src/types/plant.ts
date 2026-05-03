@@ -7,4 +7,8 @@ export interface Plant {
   coverImage: string;
   createdAt: string;
   updatedAt: string;
+  wateringIntervalDays: number;
+  lastWateredAt: string | null;
+  fertilizingIntervalDays: number;
+  lastFertilizedAt: string | null;
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Plant } from './types/plant';
-import { getPlants, addPlant, updatePlant, deletePlant } from './utils/storage';
+import { getPlants, addPlant, updatePlant, deletePlant, recordWatering, recordFertilizing } from './utils/storage';
 import PlantList from './components/PlantList';
 import PlantForm from './components/PlantForm';
 import './App.css';
@@ -54,6 +54,36 @@ function App() {
       }
     } catch (error) {
       console.error('Failed to delete plant:', error);
+    }
+  };
+
+  const handleWaterPlant = (id: string) => {
+    try {
+      const updatedPlant = recordWatering(id);
+      if (updatedPlant) {
+        setPlants(prev =>
+          prev.map(plant =>
+            plant.id === id ? updatedPlant : plant
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Failed to record watering:', error);
+    }
+  };
+
+  const handleFertilizePlant = (id: string) => {
+    try {
+      const updatedPlant = recordFertilizing(id);
+      if (updatedPlant) {
+        setPlants(prev =>
+          prev.map(plant =>
+            plant.id === id ? updatedPlant : plant
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Failed to record fertilizing:', error);
     }
   };
 
@@ -117,6 +147,8 @@ function App() {
                 plants={plants}
                 onEdit={handleEditPlant}
                 onDelete={handleDeletePlant}
+                onWater={handleWaterPlant}
+                onFertilize={handleFertilizePlant}
               />
             </>
           )}
