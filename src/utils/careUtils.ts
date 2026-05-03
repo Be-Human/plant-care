@@ -7,11 +7,25 @@ export interface CareStatus {
   isUrgent: boolean;
 }
 
+const isValidDate = (date: Date): boolean => {
+  return !isNaN(date.getTime());
+};
+
 export const calculateDaysRemaining = (
-  lastDate: string | null,
+  lastDate: string | null | undefined,
   intervalDays: number
 ): CareStatus => {
-  if (!lastDate || intervalDays <= 0) {
+  if (!lastDate || !intervalDays || intervalDays <= 0) {
+    return {
+      nextDate: '',
+      daysRemaining: 0,
+      isOverdue: false,
+      isUrgent: false,
+    };
+  }
+
+  const last = new Date(lastDate);
+  if (!isValidDate(last)) {
     return {
       nextDate: '',
       daysRemaining: 0,
@@ -22,8 +36,6 @@ export const calculateDaysRemaining = (
 
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-
-  const last = new Date(lastDate);
   last.setHours(0, 0, 0, 0);
 
   const next = new Date(last);
