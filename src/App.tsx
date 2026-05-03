@@ -6,11 +6,19 @@ import PlantList from './components/PlantList';
 import PlantForm from './components/PlantForm';
 import './App.css';
 
+export interface CareAction {
+  plantId: string;
+  action: 'water' | 'fertilize';
+  timestamp: number;
+}
+
 function App() {
   const [plants, setPlants] = useState<Plant[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlant, setEditingPlant] = useState<Plant | undefined>(undefined);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [lastCareAction, setLastCareAction] = useState<CareAction | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const loadPlants = () => {
@@ -58,6 +66,13 @@ function App() {
     }
   };
 
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 2000);
+  };
+
   const handleWaterPlant = (id: string) => {
     try {
       const updatedPlant = recordWatering(id);
@@ -67,6 +82,13 @@ function App() {
             plant.id === id ? updatedPlant : plant
           )
         );
+        setLastCareAction({ plantId: id, action: 'water', timestamp: Date.now() });
+        setTimeout(() => {
+          setLastCareAction(prev => 
+            prev && prev.plantId === id && prev.action === 'water' ? null : prev
+          );
+        }, 1500);
+        showToast(`✓ 已记录给「${updatedPlant.name}」浇水`);
       }
     } catch (error) {
       console.error('Failed to record watering:', error);
@@ -82,6 +104,13 @@ function App() {
             plant.id === id ? updatedPlant : plant
           )
         );
+        setLastCareAction({ plantId: id, action: 'fertilize', timestamp: Date.now() });
+        setTimeout(() => {
+          setLastCareAction(prev => 
+            prev && prev.plantId === id && prev.action === 'fertilize' ? null : prev
+          );
+        }, 1500);
+        showToast(`✓ 已记录给「${updatedPlant.name}」施肥`);
       }
     } catch (error) {
       console.error('Failed to record fertilizing:', error);
@@ -150,6 +179,7 @@ function App() {
                 onDelete={handleDeletePlant}
                 onWater={handleWaterPlant}
                 onFertilize={handleFertilizePlant}
+                lastCareAction={lastCareAction}
               />
             </>
           )}
@@ -170,6 +200,12 @@ function App() {
           onSave={handleSavePlant}
           onCancel={handleCancel}
         />
+      )}
+
+      {toastMessage && (
+        <div className="toast-notification">
+          {toastMessage}
+        </div>
       )}
     </div>
   );
