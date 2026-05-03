@@ -25,12 +25,54 @@ export const addPlant = (plant: Omit<Plant, 'id' | 'createdAt' | 'updatedAt'>): 
     id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 11),
     createdAt: now,
     updatedAt: now,
+    wateringIntervalDays: plant.wateringIntervalDays || 7,
+    lastWateredAt: plant.lastWateredAt || now,
+    fertilizingIntervalDays: plant.fertilizingIntervalDays || 30,
+    lastFertilizedAt: plant.lastFertilizedAt || now,
   };
   
   plants.push(newPlant);
   savePlants(plants);
   
   return newPlant;
+};
+
+export const recordWatering = (id: string): Plant | null => {
+  const plants = getPlants();
+  const plantIndex = plants.findIndex(plant => plant.id === id);
+  
+  if (plantIndex === -1) return null;
+  
+  const now = new Date().toISOString();
+  const updatedPlant: Plant = {
+    ...plants[plantIndex],
+    lastWateredAt: now,
+    updatedAt: now,
+  };
+  
+  plants[plantIndex] = updatedPlant;
+  savePlants(plants);
+  
+  return updatedPlant;
+};
+
+export const recordFertilizing = (id: string): Plant | null => {
+  const plants = getPlants();
+  const plantIndex = plants.findIndex(plant => plant.id === id);
+  
+  if (plantIndex === -1) return null;
+  
+  const now = new Date().toISOString();
+  const updatedPlant: Plant = {
+    ...plants[plantIndex],
+    lastFertilizedAt: now,
+    updatedAt: now,
+  };
+  
+  plants[plantIndex] = updatedPlant;
+  savePlants(plants);
+  
+  return updatedPlant;
 };
 
 export const updatePlant = (id: string, updatedFields: Partial<Omit<Plant, 'id' | 'createdAt'>>): Plant | null => {

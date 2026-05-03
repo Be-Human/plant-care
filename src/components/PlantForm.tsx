@@ -14,6 +14,8 @@ const PlantForm: React.FC<PlantFormProps> = ({ plant, onSave, onCancel }) => {
     location: '',
     notes: '',
     coverImage: '',
+    wateringIntervalDays: 7,
+    fertilizingIntervalDays: 30,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -26,6 +28,8 @@ const PlantForm: React.FC<PlantFormProps> = ({ plant, onSave, onCancel }) => {
         location: plant.location,
         notes: plant.notes,
         coverImage: plant.coverImage,
+        wateringIntervalDays: plant.wateringIntervalDays || 7,
+        fertilizingIntervalDays: plant.fertilizingIntervalDays || 30,
       });
       if (plant.coverImage) {
         setImagePreview(plant.coverImage);
@@ -190,6 +194,42 @@ const PlantForm: React.FC<PlantFormProps> = ({ plant, onSave, onCancel }) => {
               placeholder="添加一些关于这株植物的备注..."
               rows={4}
             />
+          </div>
+
+          <div className="form-section">
+            <h3 className="section-subtitle">养护设置</h3>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="wateringIntervalDays">浇水间隔（天）</label>
+                <input
+                  type="number"
+                  id="wateringIntervalDays"
+                  name="wateringIntervalDays"
+                  value={formData.wateringIntervalDays}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value) || 7;
+                    setFormData(prev => ({ ...prev, wateringIntervalDays: Math.max(1, value) }));
+                  }}
+                  min="1"
+                  step="1"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="fertilizingIntervalDays">施肥间隔（天）</label>
+                <input
+                  type="number"
+                  id="fertilizingIntervalDays"
+                  name="fertilizingIntervalDays"
+                  value={formData.fertilizingIntervalDays}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value) || 30;
+                    setFormData(prev => ({ ...prev, fertilizingIntervalDays: Math.max(1, value) }));
+                  }}
+                  min="1"
+                  step="1"
+                />
+              </div>
+            </div>
           </div>
           
           <div className="form-actions">

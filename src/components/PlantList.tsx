@@ -6,9 +6,11 @@ interface PlantListProps {
   plants: Plant[];
   onEdit: (plant: Plant) => void;
   onDelete: (id: string) => void;
+  onWater: (id: string) => void;
+  onFertilize: (id: string) => void;
 }
 
-const PlantList: React.FC<PlantListProps> = ({ plants, onEdit, onDelete }) => {
+const PlantList: React.FC<PlantListProps> = ({ plants, onEdit, onDelete, onWater, onFertilize }) => {
   if (plants.length === 0) {
     return (
       <div className="empty-state">
@@ -26,7 +28,9 @@ const PlantList: React.FC<PlantListProps> = ({ plants, onEdit, onDelete }) => {
           key={plant.id} 
           plant={plant} 
           onEdit={onEdit} 
-          onDelete={onDelete} 
+          onDelete={onDelete}
+          onWater={onWater}
+          onFertilize={onFertilize}
         />
       ))}
     </div>

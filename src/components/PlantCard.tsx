@@ -1,17 +1,29 @@
 import React from 'react';
 import type { Plant } from '../types/plant';
+import { getWateringStatus, getFertilizingStatus, formatDaysRemaining } from '../utils/careUtils';
 
 interface PlantCardProps {
   plant: Plant;
   onEdit: (plant: Plant) => void;
   onDelete: (id: string) => void;
+  onWater: (id: string) => void;
+  onFertilize: (id: string) => void;
 }
 
-const PlantCard: React.FC<PlantCardProps> = ({ plant, onEdit, onDelete }) => {
+const PlantCard: React.FC<PlantCardProps> = ({ plant, onEdit, onDelete, onWater, onFertilize }) => {
+  const wateringStatus = getWateringStatus(plant);
+  const fertilizingStatus = getFertilizingStatus(plant);
+
   const handleDelete = () => {
     if (window.confirm(`确定要删除 "${plant.name}" 吗？`)) {
       onDelete(plant.id);
     }
+  };
+
+  const getCareClass = (isOverdue: boolean, isUrgent: boolean): string => {
+    if (isOverdue) return 'care-overdue';
+    if (isUrgent) return 'care-urgent';
+    return 'care-normal';
   };
 
   return (
@@ -37,9 +49,39 @@ const PlantCard: React.FC<PlantCardProps> = ({ plant, onEdit, onDelete }) => {
           <span className="location-icon">📍</span>
           <span>{plant.location}</span>
         </div>
+        
+        <div className="plant-care-status">
+          <div className={`care-item ${getCareClass(wateringStatus.isOverdue, wateringStatus.isUrgent)}`}>
+            <span className="care-icon">💧</span>
+            <span className="care-label">浇水</span>
+            <span className="care-days">{formatDaysRemaining(wateringStatus.daysRemaining)}</span>
+          </div>
+          <div className={`care-item ${getCareClass(fertilizingStatus.isOverdue, fertilizingStatus.isUrgent)}`}>
+            <span className="care-icon">🧪</span>
+            <span className="care-label">施肥</span>
+            <span className="care-days">{formatDaysRemaining(fertilizingStatus.daysRemaining)}</span>
+          </div>
+        </div>
+
         {plant.notes && (
           <p className="plant-notes">{plant.notes}</p>
         )}
+
+        <div className="plant-care-actions">
+          <button 
+            className="btn-care btn-water" 
+            onClick={() => onWater(plant.id)}
+          >
+            💧 浇水
+          </button>
+          <button 
+            className="btn-care btn-fertilize" 
+            onClick={() => onFertilize(plant.id)}
+          >
+            🧪 施肥
+          </button>
+        </div>
+
         <div className="plant-actions">
           <button 
             className="btn-edit" 
