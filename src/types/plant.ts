@@ -1,3 +1,11 @@
+export interface CareLog {
+  id: string;
+  plantId: string;
+  type: 'water' | 'fertilize';
+  timestamp: string;
+  notes?: string;
+}
+
 export interface Plant {
   id: string;
   name: string;

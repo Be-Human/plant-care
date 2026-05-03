@@ -9,6 +9,7 @@ interface PlantListProps {
   onDelete: (id: string) => void;
   onWater: (id: string) => void;
   onFertilize: (id: string) => void;
+  onViewLogs: (plant: Plant) => void;
   lastCareAction: CareAction | null;
 }
 
@@ -18,6 +19,7 @@ const PlantList: React.FC<PlantListProps> = ({
   onDelete, 
   onWater, 
   onFertilize,
+  onViewLogs,
   lastCareAction 
 }) => {
   if (plants.length === 0) {
@@ -40,6 +42,7 @@ const PlantList: React.FC<PlantListProps> = ({
           onDelete={onDelete}
           onWater={onWater}
           onFertilize={onFertilize}
+          onViewLogs={onViewLogs}
           lastCareAction={lastCareAction}
         />
       ))}
